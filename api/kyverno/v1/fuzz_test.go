@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"encoding/json"
 	"testing"
 
 	fuzz "github.com/AdaLogics/go-fuzz-headers"
@@ -52,5 +53,16 @@ func FuzzV1ClusterPolicy(f *testing.F) {
 		cp.AdmissionProcessingEnabled()
 		cp.BackgroundProcessingEnabled()
 		cp.Validate(nil)
+	})
+}
+func FuzzImageVerification(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var iv ImageVerification
+		if err := json.Unmarshal(data, &iv); err != nil {
+			return
+		}
+		if _, err := json.Marshal(&iv); err != nil {
+			t.Errorf("failed to marshal image verification: %v", err)
+		}
 	})
 }
