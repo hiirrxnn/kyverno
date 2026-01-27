@@ -370,3 +370,19 @@ func Test_Enforce_VerifyImageRule(t *testing.T) {
 		}
 	}
 }
+func TestImageVerification_MalformedKey_NoPanic(t *testing.T) {
+	iv := ImageVerification{
+		Image: "nginx:latest",
+		Key:   "-----BEGIN PUBLIC KEY-----\nTHIS_IS_TOTAL_GARBAGE_DATA\n-----END PUBLIC KEY-----",
+	}
+
+	path := field.NewPath("spec")
+	
+	errs := iv.Validate(false, path)
+
+	if len(errs) == 0 {
+		t.Log("Warning: Malformed key did not return validation errors, but it didn't panic.")
+	} else {
+		t.Logf("Got expected validation errors: %v", errs)
+	}
+}
